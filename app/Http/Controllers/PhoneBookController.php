@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\PhoneBookResource;
 use App\Models\PhoneBook;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 
 class PhoneBookController extends Controller
 {
-    public function index()
+    public function index(): JsonResource
     {
         return PhoneBookResource::collection(PhoneBook::all());
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -45,12 +47,12 @@ class PhoneBookController extends Controller
             ->setStatusCode(Response::HTTP_CREATED);
     }
 
-    public function show(PhoneBook $phoneBook)
+    public function show(PhoneBook $phoneBook): JsonResource
     {
         return new PhoneBookResource($phoneBook);
     }
 
-    public function update(Request $request, PhoneBook $phoneBook)
+    public function update(Request $request, PhoneBook $phoneBook): JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -90,11 +92,11 @@ class PhoneBookController extends Controller
             ->setStatusCode(Response::HTTP_OK);
     }
 
-    public function destroy(PhoneBook $phoneBook)
+    public function destroy(PhoneBook $phoneBook): void
     {
         deleteFile('phone_books/' . getPathInfoBaseName($phoneBook->image ?? ''));
         $phoneBook->delete();
 
-        return response()->noContent();
+        response()->noContent();
     }
 }
